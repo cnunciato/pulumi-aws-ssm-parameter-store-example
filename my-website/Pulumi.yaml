@@ -1,0 +1,60 @@
+name: my-website
+runtime: yaml
+
+variables:
+  motd_param_ref:
+    Fn::StackReference:
+      - cnunciato/shared-config/dev
+      - motd_param
+  motd_secret_param_ref:
+    Fn::StackReference:
+      - cnunciato/shared-config/dev
+      - motd_secret_param
+  motd_param:
+    Fn::Invoke:
+      Function: aws:ssm:getParameter
+      Arguments:
+        name: ${motd_param_ref.name}
+  motd_secret_param:
+    Fn::Invoke:
+      Function: aws:ssm:getParameter
+      Arguments:
+        name: ${motd_secret_param_ref.name}
+        withDecryption: true
+
+resources:
+  my-bucket:
+    type: aws:s3:Bucket
+    properties:
+      website:
+        indexDocument: index.html
+
+  index.html:
+    type: aws:s3:BucketObject
+    properties:
+      bucket: ${my-bucket}
+      acl: public-read
+      contentType: text/html
+      content: |
+        <html>
+          <head>
+            <meta charset="utf-8">
+            <title>My website</title>
+            <style>
+              span {
+                display: none;
+              }
+              button:active + span {
+                display: inline;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>${motd_param.value}</h1>
+            <button>Reveal the secret message!</button>
+            <span>${motd_secret_param.value}</span>
+          </body>
+        </html>
+
+outputs:
+  url: http://${my-bucket.websiteEndpoint}

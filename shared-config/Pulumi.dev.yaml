@@ -1,0 +1,8 @@
+config:
+  aws:region: us-west-2
+  shared-config:motd_description: The message of the day.
+  shared-config:motd_secret_description: The secret message of the day.
+  shared-config:motd_secret_value:
+    secure: AAABAOQokX79jc1+1soTsjN1JQRC6eR12G6v6uptSKQ1rr7S47xjFbTmKSjaslZLdIhubOFZ
+  shared-config:motd_value: Hello from Pulumi!
+  shared-config:ssm_parameter_prefix: /cnunciato/shared-config/dev

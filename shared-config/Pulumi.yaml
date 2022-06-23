@@ -1,0 +1,41 @@
+name: shared-config
+runtime: yaml
+
+configuration:
+  ssm_parameter_prefix:
+    type: String
+  motd_value:
+    type: String
+  motd_description:
+    type: String
+  motd_secret_value:
+    type: String
+  motd_secret_description:
+    type: String
+
+# Resources are the AWS SSM Parameters managed by the stack.
+resources:
+  motd_param:
+    type: aws:ssm:Parameter
+    properties:
+      name: ${ssm_parameter_prefix}/motd
+      value: ${motd_value}
+      type: String
+      description: ${motd_description}
+  motd_secret_param:
+    type: aws:ssm:Parameter
+    properties:
+      name: ${ssm_parameter_prefix}/motd_secret
+      value: ${motd_secret_value}
+      type: SecureString
+      description: ${motd_secret_description}
+
+# Outputs are the fully-qualified AWS SSM Parameter names
+# that consuming stacks use to obtain their values.
+outputs:
+  motd_param:
+    name: ${motd_param.name}
+    description: ${motd_param.description}
+  motd_secret_param:
+    name: ${motd_secret_param.name}
+    description: ${motd_secret_param.description}
